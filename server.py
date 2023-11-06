@@ -6,6 +6,7 @@ import base64
 import os
 import io
 import requests
+
 import numpy as np
 import cv2
 from flask import Flask, jsonify, request
@@ -13,6 +14,7 @@ from flask_cors import CORS
 
 import uuid
 from process import process_masking
+from bgremover import bgRemover,run,net
 
 #https://github.com/ternaus/cloths_segmentation --> segmentasi pakaian
 import albumentations as albu
@@ -83,6 +85,33 @@ def receive_state():
 
        
         imgArray = process_masking(data['image'])
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+   
+
+    
+   
+    return jsonify({"mask": imgArray})
+
+
+@app.route('/api/bgremover', methods=['POST'])
+def bg_recieve():
+    """Endpoint to receive state data and file."""
+    # Handle file upload
+    print("STARTING MASKING")
+
+    
+    try:
+        # Parse JSON data
+        data = request.get_json()
+        
+        if data is None or 'image' not in data:
+            return jsonify({'error': 'Invalid input, please send JSON with "image" key containing Base64 encoded image data.'}), 400
+
+       
+        imgArray = bgRemover(data['image'])
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
