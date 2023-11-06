@@ -74,7 +74,7 @@ def initialize_net():
 
 net = initialize_net()  # This will initialize the net when this script is imported
 
-def run(img):
+def run(img, original_size):
     torch.cuda.empty_cache()
 
     sample = preprocess(img)
@@ -97,6 +97,8 @@ def run(img):
     predict_np = predict.cpu().data.numpy()
     im = Image.fromarray(predict_np * 255).convert('RGB')
 
+    # Resize the image to original dimensions
+    im = im.resize(original_size, resample=Image.NEAREST)
     # Cleanup.
     del d1, d2, d3, d4, d5, d6, d7
 
@@ -110,9 +112,9 @@ def bgRemover(imgPath) :
             base64.b64decode(imgPath )
         ))
 
-    # Ensure i,qge size is under 1024
-    if img.size[0] > 1024 or img.size[1] > 1024:
-        img.thumbnail((1024, 1024))
+     # Ensure image size is under 1024
+    original_size = img.size  # store original size
+   
     
     currentDir = os.path.dirname(__file__)
 
@@ -129,7 +131,7 @@ def bgRemover(imgPath) :
  
 
     # Process Image
-    res = run(np.array(img))
+    res = run(np.array(img), original_size)
 
     # Save to buffer
     buff = io.BytesIO()
