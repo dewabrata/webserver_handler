@@ -140,7 +140,7 @@ def bgRemover(imgPath) :
 
     image_base64 = base64.b64encode(buff.getvalue()).decode('utf-8')
 
-    return image_base64
+    return [image_base64]
     # Save the buffer contents to a file
     # output_image_path = 'output_image.png'  # specify the output file name
     # with open(output_image_path, 'wb') as f:
